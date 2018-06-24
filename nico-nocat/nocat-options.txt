@@ -1,0 +1,2 @@
+## nocat web启动指令
+java -classpath .;lib/* com/nico/nocat/start/ServerStart

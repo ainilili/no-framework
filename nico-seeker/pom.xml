@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>seeker</artifactId>
+	<packaging>jar</packaging>
+	<name>seeker</name>
+	<url>https://gitee.com/ainilili/seeker</url>
+	<description>Xml parser</description>
+	
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://gitee.com/ainilili/seeker</url>
+	</scm>
+	
+	<parent>
+		<groupId>com.gitee.ainilili</groupId>
+		<artifactId>noframework</artifactId>
+		<version>1.0.6</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+ 	<build>
+        <plugins>
+        	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+			</plugin>
+        </plugins>
+    </build>
+
+	<developers>
+		<developer>
+			<name>nico</name>
+			<email>ainililia@163.com</email>
+			<organization>iamnico</organization>
+			<organizationUrl>http://iamnico.cn</organizationUrl>
+		</developer>
+	</developers>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.gitee.ainilili</groupId>
+			<artifactId>noson</artifactId>
+			<version>1.0.6</version>
+		</dependency>
+	</dependencies>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>nico</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>nico</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	
+</project>
