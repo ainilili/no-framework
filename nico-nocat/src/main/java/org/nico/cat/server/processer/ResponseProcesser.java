@@ -27,7 +27,7 @@ public class ResponseProcesser {
 			Container.getInstance().setActivityResponse(response);
 			ResponseProcessChains.process(request, response);
 		}catch(Exception e){
-			throw new ProcessException("An exception occurred while assembly the response：" + e.getMessage());
+			throw new ProcessException("An exception occurred while assembly the response：" + e.getMessage(), e);
 		}
 		return response;
 	}

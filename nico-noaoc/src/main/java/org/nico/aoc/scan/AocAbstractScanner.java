@@ -12,7 +12,7 @@ import org.nico.aoc.scan.buddy.AssembleBuddy;
  * @author nico
  * @version createTime：2018年2月4日 下午7:58:30
  */
-public abstract class AbstractAOCScanner {
+public abstract class AocAbstractScanner {
 	
 	/**
 	 * assemble params into book

@@ -1,4 +1,4 @@
-package org.nico.aoc.scan.annotations;
+package org.nico.aoc.scan.annotations.aspect;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -15,7 +15,7 @@ import org.nico.aoc.scan.entity.AspectType;
  * @version createTime：2018年3月7日 下午2:31:14
  */
 
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Aspect {

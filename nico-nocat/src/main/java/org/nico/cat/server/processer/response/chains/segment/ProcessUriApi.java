@@ -28,8 +28,7 @@ public class ProcessUriApi extends AbstractResponseProcess{
 						try {
 							ExecutorFactory.getExecutor(ApiModule.class).execute(request, response, module);
 							if(StringUtils.isNotBlank(request.getUriRedirect())){
-								request.setUri(request.getUriRedirect());
-								request.setUriRedirect(null);
+								request.setUriRedirect(request.getUriRedirect());
 								break;
 							}else if(StringUtils.isNotBlank(request.getApiRedirect())){
 								request.setUri(request.getApiRedirect());

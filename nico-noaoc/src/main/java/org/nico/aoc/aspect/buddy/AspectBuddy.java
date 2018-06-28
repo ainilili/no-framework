@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
 
 import org.nico.aoc.ConfigKey;
 import org.nico.aoc.aspect.buddy.AspectBuddy.ExecutionEntity.MethodWrapper;
-import org.nico.aoc.aspect.handler.AspectHandlerInfo;
-import org.nico.aoc.aspect.handler.AspectJDKProxyHandlerImpl;
+import org.nico.aoc.aspect.handler.AspectProxyHandlerSupport;
+import org.nico.aoc.aspect.handler.AspectProxyHandlerForJDKImpl;
 import org.nico.aoc.book.Book;
 import org.nico.aoc.book.Book.Relier;
 import org.nico.aoc.book.shop.BookShop;
@@ -25,6 +25,8 @@ import org.nico.aoc.throwable.DefinitionException;
 import org.nico.aoc.util.reflect.FieldUtils;
 import org.nico.asm.proxy.cglib.CglibProxy;
 import org.nico.util.string.StringUtils;
+
+import net.sf.cglib.proxy.Enhancer;
 
 /** 
  * Execution expressions handle small tools.
@@ -38,6 +40,10 @@ public class AspectBuddy {
 	public static final String UNIFIED = "(.*)";
 
 	public static final String REGEX_FOR_UNIFIED = "[*]+";
+	
+	public static final String CGLIB_PROXY_OBJECT_MARK = "$$EnhancerByCGLIB$$";
+	
+	public static final String CGLIB_BE_PROXY_OBJECT_MARK = "val$handler";
 
 	/**
 	 * Parser Expression from the aspect point
@@ -68,15 +74,25 @@ public class AspectBuddy {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
-	public static List<ExecutionEntity> matchExecution(String execution, Book book) throws DefinitionException, NoSuchMethodException, SecurityException{
-		if(execution == null){
+	public static List<ExecutionEntity> matchExecution(String[] executions, Book book) throws DefinitionException, NoSuchMethodException, SecurityException{
+		if(executions == null || executions.length == 0){
 			throw new NullPointerException("execution is null");
 		}
-		if(! execution.startsWith(ConfigKey.KEY_OF_ASPECT_EXPRESSION)){
-			throw new DefinitionException("around must start with 'execution'");
+		
+		List<ExecutionEntity> executionEntities = new ArrayList<ExecutionEntity>();
+		
+		for(String execution: executions) {
+			if(! execution.startsWith(ConfigKey.KEY_OF_ASPECT_EXPRESSION)){
+				throw new DefinitionException("around must start with 'execution'");
+			}
+			execution = parseExecution(execution).replaceAll(REGEX_FOR_UNIFIED, UNIFIED);
+			List<ExecutionEntity> es = handlerExpression(BookShop.getInstance().getBooks(), UNIFIED + execution + UNIFIED);
+			if(es != null) {
+				executionEntities.addAll(es);
+			}
 		}
-		execution = parseExecution(execution).replaceAll(REGEX_FOR_UNIFIED, UNIFIED);
-		return handlerExpression(BookShop.getInstance().getBooks(), UNIFIED + execution + UNIFIED);
+		
+		return executionEntities;
 	}
 
 	/**
@@ -115,43 +131,88 @@ public class AspectBuddy {
 	}
 
 	/**
-	 * Handle base Aspect
+	 * Handle base Aspect with excution
 	 * 
-	 * @param book Proxy book
-	 * @param aspectMethod Proxy method
-	 * @param value Execution
-	 * @param aspectDic Aspect type 
-	 * @throws NoSuchMethodException can't found be proxyed method
+	 * @param book 
+	 * 		Proxy book
+	 * @param aspectMethod 
+	 * 		Proxy method
+	 * @param value 
+	 * 		Execution
+	 * @param aspectDic 
+	 * 		Aspect type 
+	 * @throws NoSuchMethodException 
+	 * 		Can't found be proxyed method
 	 * @throws SecurityException
-	 * @throws DefinitionException "No matches about the point definition
+	 * @throws DefinitionException 
+	 * 		No matches about the point definition
 	 */
-	public static void handleAspect(Book book, Method aspectMethod, String proxyType, String value, AspectDic aspectDic) throws NoSuchMethodException, SecurityException, DefinitionException{
-		List<ExecutionEntity> executionEntities = AspectBuddy.matchExecution(value, book);
+	public static void aspectByExecution(Book proxyBook, Method aspectMethod, String proxyType, String[] values, AspectDic aspectDic) throws NoSuchMethodException, SecurityException, DefinitionException{
+		List<ExecutionEntity> executionEntities = AspectBuddy.matchExecution(values, proxyBook);
 		if(executionEntities == null || executionEntities.size() == 0){
-			throw new DefinitionException("No matches about the point definition：" + value);
+			throw new DefinitionException("No matches about the point definition：" + values);
 		}
-		
-		
 		for(ExecutionEntity entity: executionEntities){
-			Class<?> target = entity.getBook().getClazz();
 			if(entity.getBook() != null){
-				Object obj = null;
-				InvocationHandler invocationHandler = new AspectJDKProxyHandlerImpl(book.getObject(), aspectMethod, entity.getMethodWrappers(), entity.getBook().getObject(), aspectDic);
-				
-				if(proxyType.equalsIgnoreCase(AspectType.JDK_PROXY.toString())){
-					obj = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), target.getInterfaces(), invocationHandler);
-				
-				}else if(proxyType.equalsIgnoreCase(AspectType.CGLIB_PROXY.toString())){
-					obj = CglibProxy.newProxyInstance(target, invocationHandler);
-				
-				}else{
-					throw new RuntimeException("No proxy type is " + proxyType);
-				}
-				
-				entity.getBook().setObject(obj);
-				flushAspectObject2Reliers(entity.getBook().getReliers(), obj);
+				aspect(proxyBook.getObject(), aspectMethod, entity.getBook(), entity.getMethodWrappers(), proxyType, aspectDic);
 			}
 		}
+	}
+	
+	/**
+	 * Proxy through the {@link Section} annotation
+	 * 
+	 * @param proxyClass
+	 * 			Proxy class
+	 * @param beProxyBook
+	 *   		Be proxied book
+	 * @param beProxyMethod
+	 * 			Be proxied method
+	 * @param proxyType
+	 * 			Proxy type {@link AspectType}
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public static void aspectBySection(Class<?> proxyClass, Book beProxyBook, Method beProxyMethod, String proxyType) throws InstantiationException, IllegalAccessException{
+		List<MethodWrapper> mws = new ArrayList<MethodWrapper>();
+		mws.add(new MethodWrapper(beProxyMethod));
+		aspect(proxyClass.newInstance(), null, beProxyBook, mws, proxyType, AspectDic.NULL);
+	}
+	
+	/**
+	 * Aspect
+	 * 
+	 * @param proxyObject
+	 * 			Proxy object
+	 * @param aspectMethod
+	 * 			Proxy method
+	 * @param beProxyBook
+	 * 			Be proxied book
+	 * @param beProxyMethodWrapper
+	 * 			Be proxied method wrapper
+	 * @param proxyType
+	 * 			Proxy type {@link AspectType}
+	 * @param aspectDic
+	 * 			Aspect dic, if this param is null, will proxy all method from {@link AspectProxy}
+	 */
+	public static void aspect(Object proxyObject, Method aspectMethod, Book beProxyBook, List<MethodWrapper> beProxyMethodWrapper, String proxyType, AspectDic aspectDic){
+		Class<?> target = beProxyBook.getClazz();
+		Object obj = null;
+		
+		InvocationHandler invocationHandler = new AspectProxyHandlerForJDKImpl(proxyObject, aspectMethod, beProxyMethodWrapper, beProxyBook.getObject(), aspectDic);
+		
+		if(proxyType.equalsIgnoreCase(AspectType.JDK_PROXY.toString())){
+			obj = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), target.getInterfaces(), invocationHandler);
+		
+		}else if(proxyType.equalsIgnoreCase(AspectType.CGLIB_PROXY.toString())){
+			obj = CglibProxy.newProxyInstance(target, invocationHandler);
+		
+		}else{
+			throw new RuntimeException("No proxy type is " + proxyType);
+		}
+		
+		beProxyBook.setObject(obj);
+		flushAspectObject2Reliers(beProxyBook.getReliers(), obj);
 	}
 
 	/**
@@ -184,6 +245,10 @@ public class AspectBuddy {
 	 * @param proxyObject
 	 * 				Proxy Object
 	 * @return Target Object
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
 	public static Object getTargetObject(Object proxyObject){
 		Object target = proxyObject;
@@ -192,11 +257,27 @@ public class AspectBuddy {
 		 */
 		if(proxyObject instanceof Proxy){
 			InvocationHandler handler = Proxy.getInvocationHandler(proxyObject);
-			if(handler instanceof AspectHandlerInfo){
-				target = ((AspectHandlerInfo) handler).getBeProxyObject();
+			if(handler instanceof AspectProxyHandlerSupport){
+				target = ((AspectProxyHandlerSupport) handler).getBeProxyObject();
+			}
+		}else if(proxyObject.getClass().getName().indexOf(CGLIB_PROXY_OBJECT_MARK) != -1){
+			try{
+				Field h = proxyObject.getClass().getDeclaredField("CGLIB$CALLBACK_0");  
+		        h.setAccessible(true);  
+		        Object dynamicAdvisedInterceptor = h.get(proxyObject);  
+		          
+		        Field advised = dynamicAdvisedInterceptor.getClass().getDeclaredField(CGLIB_BE_PROXY_OBJECT_MARK);  
+		        advised.setAccessible(true);  
+		        
+		        InvocationHandler handler = (InvocationHandler) advised.get(dynamicAdvisedInterceptor);
+		        if(handler instanceof AspectProxyHandlerSupport){
+		        	target = ((AspectProxyHandlerSupport) handler).getBeProxyObject();
+		        }
+			}catch(Throwable e){
+				throw new RuntimeException(e);
 			}
 		}
-		if(target instanceof Proxy){
+		if(target instanceof Proxy || proxyObject.getClass().getName().indexOf(CGLIB_PROXY_OBJECT_MARK) != -1){
 			return getTargetObject(target);
 		}
 		return target;

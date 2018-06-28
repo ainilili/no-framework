@@ -18,13 +18,14 @@ import org.nico.seeker.scan.impl.NicoScanner;
 import org.nico.seeker.searcher.SeekerSearcher;
 import org.nico.seeker.searcher.impl.NicoSearcher;
 import org.nico.util.collection.CollectionUtils;
+import org.nico.util.resource.ResourceUtils;
 import org.nico.util.stream.StreamUtils;
 import org.nico.util.string.StringUtils;
 
 
-public class ConfigScanner extends AbstractAOCScanner{
+public class AocConfigScanner extends AocAbstractScanner{
 
-	private Logging logging = LoggingHelper.getLogging(ConfigScanner.class);
+	private Logging logging = LoggingHelper.getLogging(AocConfigScanner.class);
 
 	@Override
 	public List<Book> scan(List<String> uris) throws Exception {
@@ -40,7 +41,7 @@ public class ConfigScanner extends AbstractAOCScanner{
 			for(String uri: uris){
 				try{
 					logging.info("Begin scanning the document with uri：" + uri);
-					String documents = StreamUtils.readStream2Str(ConfigKey.CLASSPATH + uri);
+					String documents = StreamUtils.readStream2Str(ResourceUtils.getClasspathResource(uri));
 					if(StringUtils.isNotBlank(documents)){
 						domBeans.addAll(scanner.domScan(documents));
 					}

@@ -73,7 +73,6 @@ public class NoLog extends LoggingConfig implements Logging{
 			}
 			FileUtils.writerAfterBytes(message.getBytes(), CONFIGURATE_LOGPATH);
 		}else{
-			
 			FileUtils.writerAfterBytes(message.getBytes(), CONFIGURATE_LOGPATH);
 		}
 	}

@@ -65,7 +65,7 @@ public class HandlingAspectTag extends LoaderHandler{
 		loadAopSubTags(subTags, aopExecution, proxyType, book);
 	}
 
-	private void loadAopSubTags(List<BookTag> subTags, String aopExecution, String proxyType, Book book) throws LackException, NoSuchMethodException, SecurityException, DefinitionException{
+	private void loadAopSubTags(List<BookTag> subTags, String aopExecution, String proxyType, Book book) throws LackException, SecurityException, DefinitionException{
 		for(AspectDic aspectDic: ConfigKey.ASPECT_DICTIONARIES_ORDER){
 			for(BookTag subTag: subTags){
 				if(subTag.getProperties() == null){
@@ -86,21 +86,25 @@ public class HandlingAspectTag extends LoaderHandler{
 						}
 					}
 					Method aspectMethod = null;
-					switch(aspectDic){
-					case BEFORE: 
-					case AFTER: 
-						aspectMethod = book.getClazz().getDeclaredMethod(methodName, AspectPoint.class);
-						break;
-					case AROUND:
-						aspectMethod = book.getClazz().getDeclaredMethod(methodName, ProcessingAspectPoint.class);
-						break;
-					case WRONG:
-						aspectMethod = book.getClazz().getDeclaredMethod(methodName, ProcessingAspectPoint.class, Throwable.class);
-						break;
-					default:
-						aspectMethod = book.getClazz().getDeclaredMethod(methodName, AspectPoint.class);
+					try {
+						switch(aspectDic){
+						case BEFORE: 
+						case AFTER: 
+							aspectMethod = book.getClazz().getDeclaredMethod(methodName, AspectPoint.class);
+							break;
+						case AROUND:
+							aspectMethod = book.getClazz().getDeclaredMethod(methodName, ProcessingAspectPoint.class);
+							break;
+						case WRONG:
+							aspectMethod = book.getClazz().getDeclaredMethod(methodName, ProcessingAspectPoint.class, Throwable.class);
+							break;
+						default:
+							aspectMethod = book.getClazz().getDeclaredMethod(methodName, AspectPoint.class);
+						}
+						AspectBuddy.aspectByExecution(book, aspectMethod, proxyType, new String[] {value}, aspectDic);
+					}catch(NoSuchMethodException e) {
+						
 					}
-					AspectBuddy.handleAspect(book, aspectMethod, proxyType, value, aspectDic);
 				}
 			}
 		}

@@ -68,6 +68,7 @@ private static NomvcContainer instance;
 	
 	public LobbyEntity getLobbyEntity(String mapping, RequestMethod method){
 		Map<String, LobbyEntity> routers = null;
+		String routerKey = "~#$%";
 		for(int i = 0; i< 2; i++) {
 			if(i == 0) {
 				routers = lobbyMap.get(method);
@@ -77,12 +78,16 @@ private static NomvcContainer instance;
 				}
 				routers = lobbyMap.get(RequestMethod.DEFAULT);
 			}
+			
 			if(routers != null && ! routers.isEmpty()) {
 				for(String key: routers.keySet()){
 					if(PathValidMatchUtils.pathValidMatcher(key, mapping)){
-						return routers.get(key);
+						routerKey = key.indexOf("{") >= routerKey.indexOf("{") ? key : routerKey;
 					}
 				}
+			}
+			if(routers != null && routers.containsKey(routerKey)) {
+				return routers.get(routerKey);
 			}
 		}
 		return null;

@@ -3,11 +3,12 @@ package org.nico.aoc;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nico.aoc.scan.annotations.Aspect;
 import org.nico.aoc.scan.annotations.Book;
 import org.nico.aoc.scan.annotations.Dao;
 import org.nico.aoc.scan.annotations.Service;
+import org.nico.aoc.scan.annotations.aspect.Aspect;
 import org.nico.aoc.scan.entity.AspectDic;
+import org.nico.util.resource.ResourceUtils;
 
 public class ConfigKey {
 
@@ -68,7 +69,7 @@ public class ConfigKey {
 	static{
 		{
 			{
-				CLASSPATH = ConfigKey.class.getResource("/").getPath();
+				CLASSPATH = ResourceUtils.CLASSPATH;
 			}
 		}
 		{

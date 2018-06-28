@@ -3,10 +3,10 @@ package org.nico.aoc.scan.entity;
 
 import java.lang.annotation.Annotation;
 
-import org.nico.aoc.scan.annotations.After;
-import org.nico.aoc.scan.annotations.Around;
-import org.nico.aoc.scan.annotations.Before;
-import org.nico.aoc.scan.annotations.Wrong;
+import org.nico.aoc.scan.annotations.aspect.After;
+import org.nico.aoc.scan.annotations.aspect.Around;
+import org.nico.aoc.scan.annotations.aspect.Before;
+import org.nico.aoc.scan.annotations.aspect.Wrong;
 
 public enum AspectDic {
 
@@ -18,6 +18,7 @@ public enum AspectDic {
 	
 	WRONG(Wrong.class),
 	
+	NULL(null),
 	;
 	
 	private Class<? extends Annotation> annotationClass;

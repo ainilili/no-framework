@@ -38,6 +38,9 @@ public class CookieUtils {
 					if(cookie.isSecure()){
 						buf.append(";secure");
 					}
+					if(cookie.getMaxAge() != null && cookie.getMaxAge() > -1) {
+						buf.append(";max-age=" + cookie.getMaxAge());
+					}
 				}
 			}
 		}

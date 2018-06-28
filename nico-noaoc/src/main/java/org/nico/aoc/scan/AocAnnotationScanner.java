@@ -19,9 +19,9 @@ import org.nico.util.reflect.ClassUtils;
  * @version createTime：2018年1月21日 下午1:56:52
  */
 
-public class AnnotationScanner extends AbstractAOCScanner{
+public class AocAnnotationScanner extends AocAbstractScanner{
 
-	private Logging logging = LoggingHelper.getLogging(AnnotationScanner.class);
+	private Logging logging = LoggingHelper.getLogging(AocAnnotationScanner.class);
 
 	@Override
 	public List<Book> scan(List<String> packs) throws BookHandlingException {

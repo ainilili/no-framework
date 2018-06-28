@@ -1,6 +1,7 @@
 package org.nico.cat.config;
 
 import org.nico.util.jar.JarToolUtils;
+import org.nico.util.resource.ResourceUtils;
 
 /** 
  * The configuration of server
@@ -10,7 +11,7 @@ import org.nico.util.jar.JarToolUtils;
 public class ConfigKey {
 	
 	/** Fixed attribute **/
-	public static final String CLASSPATH = ConfigKey.class.getResource("/").getPath();
+	public static final String CLASSPATH = ResourceUtils.CLASSPATH;
 	
 	public static final String CONFIGURATION = "cat.xml";
 	

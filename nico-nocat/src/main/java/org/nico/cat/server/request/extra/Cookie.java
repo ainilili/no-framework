@@ -20,6 +20,8 @@ public class Cookie {
 	
 	private Date expires;
 	
+	private Integer maxAge;
+	
 	private boolean httpOnly;
 	
 	private boolean secure;
@@ -28,6 +30,14 @@ public class Cookie {
 		super();
 		this.name = name;
 		this.value = value;
+	}
+	
+	public Integer getMaxAge() {
+		return maxAge;
+	}
+
+	public void setMaxAge(Integer maxAge) {
+		this.maxAge = maxAge;
 	}
 
 	public String getName() {

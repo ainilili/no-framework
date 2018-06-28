@@ -12,7 +12,7 @@ import org.nico.aoc.scan.entity.AspectDic;
  * @author nico
  * @version createTime：2018年3月31日 下午9:35:44
  */
-public class AspectHandlerInfo {
+public class AspectProxyHandlerSupport {
 
 	protected Method aspectMethod;  
 

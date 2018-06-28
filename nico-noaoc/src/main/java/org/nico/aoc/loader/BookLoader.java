@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.nico.aoc.book.Book;
 import org.nico.aoc.book.shop.BookShop;
-import org.nico.aoc.scan.AbstractAOCScanner;
-import org.nico.aoc.scan.AnnotationScanner;
-import org.nico.aoc.scan.ConfigScanner;
+import org.nico.aoc.scan.AocAbstractScanner;
+import org.nico.aoc.scan.AocAnnotationScanner;
+import org.nico.aoc.scan.AocConfigScanner;
 import org.nico.aoc.scan.handler.LoaderHandlerQueue;
 
 /** 
@@ -17,8 +17,8 @@ import org.nico.aoc.scan.handler.LoaderHandlerQueue;
 
 public class BookLoader {
 
-	static AbstractAOCScanner configScanner = new ConfigScanner();
-	static AbstractAOCScanner annotationScanner = new AnnotationScanner();
+	static AocAbstractScanner configScanner = new AocConfigScanner();
+	static AocAbstractScanner annotationScanner = new AocAnnotationScanner();
 	
 	public static void loader(List<String> packs, List<String> uris) throws Throwable{
 		List<Book> newBooks = configScanner.scan(uris);

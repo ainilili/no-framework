@@ -25,5 +25,19 @@ public class TypeUtils {
 		return asmTypes;
 	}
 	
+	public static boolean sameType(Type[] types, Class<?>[] clazzes) {
+        // 个数不同
+        if (types.length != clazzes.length) {
+            return false;
+        }
+
+        for (int i = 0; i < types.length; i++) {
+            if (!Type.getType(clazzes[i]).equals(types[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+	
 	
 }

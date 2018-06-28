@@ -2,6 +2,8 @@ package org.nico.aoc.aspect.point;
 
 import java.lang.reflect.Method;
 
+import org.nico.aoc.aspect.buddy.AspectBuddy;
+
 /** 
  * Load the information of the agent and provide the agent method to execute the entry.
  * 
@@ -11,24 +13,25 @@ import java.lang.reflect.Method;
 
 public class AspectPoint{
 	
-	protected Object obj;
+	protected Object beProxyObj;
+	
+	private Object sourceObj;
 	
 	protected Method method;
 	
 	protected Object[] args;
 	
-	public AspectPoint(Object obj, Method method, Object[] args) {
-		this.obj = obj;
+	public AspectPoint(Object beProxyObj, Method method, Object[] args) {
+		this.beProxyObj = beProxyObj;
 		this.method = method;
 		this.args = args;
+		if(beProxyObj != null){
+			this.sourceObj = AspectBuddy.getTargetObject(beProxyObj);
+		}
 	}
-
-	public Object getObj() {
-		return obj;
-	}
-
-	public void setObj(Object obj) {
-		this.obj = obj;
+	
+	public Object getSourceObject(){
+		return sourceObj;
 	}
 
 	public Method getMethod() {

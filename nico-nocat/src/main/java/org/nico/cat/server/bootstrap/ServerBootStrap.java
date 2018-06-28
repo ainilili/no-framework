@@ -37,7 +37,9 @@ public class ServerBootStrap {
 		/**
 		 * Start Server with port
 		 */
+		long start = System.nanoTime();
 		init();
+		logging.info("Starting the service takes " + (System.nanoTime() - start)/1000000 + " milliseconds");
 		if(port > 0) {
 			new Server(port).start();
 		}else {
@@ -47,7 +49,7 @@ public class ServerBootStrap {
 	
 	public void init() {
 		try{
-			logging.info("Server bootStrap be launch on localhost ");
+			logging.info("123Server bootStrap be launch on localhost ");
 			/**
 			 * Reader configuration by SEEKER
 			 */

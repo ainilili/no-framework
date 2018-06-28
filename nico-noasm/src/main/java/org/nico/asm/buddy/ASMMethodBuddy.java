@@ -3,6 +3,7 @@ package org.nico.asm.buddy;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,10 +33,7 @@ public class ASMMethodBuddy {
 
 		methodEntity.setMethodName(method.getName());
 
-		Class<?>[] types = method.getParameterTypes();
-
-		final Type[] asmTypes = TypeUtils.convertASMTypes(types);
-
+		final Class<?>[] types = method.getParameterTypes();
 
 		ClassReader classReader = new ClassReader(method.getDeclaringClass().getName());
 		ClassVisitor visitor = new ClassVisitor(Opcodes.ASM5) {
@@ -45,7 +43,7 @@ public class ASMMethodBuddy {
 					String[] exceptions) {
 				Type[] paramTypes = Type.getArgumentTypes(desc);
 
-				if(!name.equals("<clinit>") && name.equals(methodEntity.getMethodName()) && Arrays.equals(paramTypes, asmTypes) && methodEntity.getNormalParameters() == null){
+				if(! name.equals("<clinit>") && name.equals(methodEntity.getMethodName()) && TypeUtils.sameType(paramTypes, types)){
 
 					methodEntity.setMethod(method);
 
@@ -56,7 +54,7 @@ public class ASMMethodBuddy {
 						@Override
 						public void visitLocalVariable(String name, String desc, String signature, Label start, Label end,
 								int index) {
-							if(! name.equals("this")){
+							if(! name.equals("this") || Modifier.isStatic(method.getModifiers())){
 								normalParameters.add(new ASMParameterEntity(name, signature));
 							}
 							super.visitLocalVariable(name, desc, signature, start, end, index);
@@ -90,16 +88,7 @@ public class ASMMethodBuddy {
 
 		methodEntity.setMethodName(constructor.getName());
 
-		Class<?>[] types = constructor.getParameterTypes();
-
-		final Type[] asmTypes = new Type[types == null ? 0 : types.length];
-		if(types != null){
-			int index = 0;
-			for(Class<?> clazz: types){
-				asmTypes[index ++] = Type.getType(clazz);
-			}
-		}
-
+		final Class<?>[] types = constructor.getParameterTypes();
 
 		ClassReader classReader = new ClassReader(constructor.getDeclaringClass().getName());
 		ClassVisitor visitor = new ClassVisitor(Opcodes.ASM5) {
@@ -108,7 +97,7 @@ public class ASMMethodBuddy {
 			public MethodVisitor visitMethod(int access, String name, String desc, String signature,
 					String[] exceptions) {
 				Type[] paramTypes = Type.getArgumentTypes(desc);
-				if(name.equals("<init>") && Arrays.equals(paramTypes, asmTypes) && methodEntity.getNormalParameters() == null){
+				if(name.equals("<init>") && TypeUtils.sameType(paramTypes, types)){
 
 					methodEntity.setConstructor(constructor);
 					
