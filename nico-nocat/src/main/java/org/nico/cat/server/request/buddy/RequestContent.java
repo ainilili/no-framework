@@ -61,6 +61,11 @@ public class RequestContent {
 	 * Api Redirect
 	 */
 	private String apiRedirect;
+	
+	/**
+	 * Is form data
+	 */
+	private boolean isFormData;
 
 	/**
 	 * Request url properties
@@ -101,6 +106,14 @@ public class RequestContent {
 		}
 	}
 	
+	public boolean isFormData() {
+		return isFormData;
+	}
+
+	public void setFormData(boolean isFormData) {
+		this.isFormData = isFormData;
+	}
+
 	public void setProperty(String key, String value){
 		this.properties.put(key, value);
 	}

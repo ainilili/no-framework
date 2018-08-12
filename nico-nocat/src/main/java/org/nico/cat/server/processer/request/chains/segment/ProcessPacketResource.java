@@ -1,11 +1,15 @@
 package org.nico.cat.server.processer.request.chains.segment;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nico.cat.config.ConfigTemplate;
+import org.nico.cat.server.exception.error.PacketException;
 import org.nico.cat.server.exception.error.UnsupportException;
 import org.nico.cat.server.processer.request.chains.AbstractRequestProcess;
 import org.nico.cat.server.request.Request;
@@ -27,31 +31,29 @@ public class ProcessPacketResource extends AbstractRequestProcess{
 	
 	@Override
 	public Request process(String packet, Request request) throws Exception {
-		if(request.getHeaders().containsKey("method") && request.getHeaders().get("method").equals("POST")){
-			if(request.getHeaders().containsKey("contentType")){
-				String contentType = request.getHeader("contentType");
-				int index = -1;
-				if(contentType.contains("multipart/form-data") && (index = contentType.indexOf("boundary")) != -1){
-					char[] chars = contentType.toCharArray();
-					StringBuilder builder = new StringBuilder();
-					for(int s = index + "boundary".length() + 1; s < chars.length; s ++){
-						char currentChar = chars[s];
-						if(currentChar != ';'){
-							builder.append(currentChar);
-						}else{
-							break;
-						}
-					}
-					String splitMark = builder.toString();
-					if(StringUtils.isNotBlank(request.getBody())){
-						request.setResourceMap(parseResourceMapFromBody(request.getBody(), splitMark));
-					}
-				}
+		if(request.isFormData()){
+			String contentType = request.getHeader("Content-Type");
+			int index = contentType.indexOf("boundary");
+			if(index == -1){
+				throw new PacketException("Not found boundary from Content-Type.");
 			}
+			index += "boundary=".length();
+			int nextFlag = contentType.indexOf(";", index);
+			String splitMark = contentType.substring(index, nextFlag == -1 ? contentType.length() : nextFlag);
+			parseResource(request, splitMark.getBytes());
 		}
 		return next(packet, request);
 	}
 
+	
+	private void parseResource(Request request, byte[] marks) throws IOException{
+		Socket client = request.getClient();
+		InputStream inputStream = client.getInputStream();
+		
+		System.out.println(1);
+	}
+	
+	
 	/**
 	 * Get resource map object from the request body
 	 * 
@@ -110,5 +112,5 @@ public class ProcessPacketResource extends AbstractRequestProcess{
 		}
 		return null;
 	}
-
+	
 }

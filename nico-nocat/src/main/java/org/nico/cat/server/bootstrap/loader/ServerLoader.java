@@ -1,6 +1,7 @@
 package org.nico.cat.server.bootstrap.loader;
 
-import org.nico.seeker.searcher.SeekerSearcher;
+import org.nico.fig.center.ConfigCenter;
+import org.nico.fig.center.bean.NocatBean;
 
 /** 
  * Loader config
@@ -9,6 +10,6 @@ import org.nico.seeker.searcher.SeekerSearcher;
  */
 public interface ServerLoader {
 	
-	public void loader(SeekerSearcher searcher);
+	public void loader(NocatBean nocatCenter);
 	
 }

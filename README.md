@@ -1,6 +1,6 @@
 # No Framework
-<a href='https://gitee.com/ainilili/No-Framework/stargazers'><img src='https://gitee.com/ainilili/No-Framework/badge/star.svg?theme=dark' alt='star'></img></a>
-<a href='https://gitee.com/ainilili/No-Framework/members'><img src='https://gitee.com/ainilili/No-Framework/badge/fork.svg?theme=dark' alt='fork'></img></a>
+<a href='https://gitee.com/ainilili/No-Framework/members'><img src='https://img.shields.io/maven-central/v/com.gitee.ainilili/noframework.svg?style=flat-square' alt='maven'></img></a>
+<img alt="code style" src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square">
 
 ## 一、序言
 NoFramework是笔者在闲暇之余写的一个网络爬虫项目```Seeker```一路延续发展到后来的```No```系列的框架的诞生。一路走来，不知不觉已经快一年了，这期间有些项目有的被重写过，有的架构也发生了大的改变，还有的一直在调优过程中转变着解决方案，在付出时间的同时，获得的回报是独立思考过程带给自己的对底层细节的了解。
@@ -37,24 +37,24 @@ No Framework，简称**NF**，为Java Web开发提供整套服务框架解决方
 #### 2.2.1、父模块
 项目名 | 版本号 | 功能
 ---|---|---
-noframework | 1.0.8 | 子模块的parent依赖
+noframework | 1.1.3 | 子模块的parent依赖
 
 #### 2.2.2、子模块
 
 项目名 | 版本号 | 功能
 ---|---|---
-noson | 1.0.8 | Json序列化&反序列化
-nocat | 1.0.8 | 基于Java的Web容器
-noaoc | 1.0.8 | IOC&AOP
-nomvc | 1.0.8 | MVC
-nolog | 1.0.8 | 日志及工具包
-seeker | 1.0.8 | Xml解析
-nodb | 1.0.8 | ORM
-noasm | 1.0.8 | ASM工具
-nomvc-support-for-nocat | 1.0.8 | 提供对Nocat的MVC支持
-nomvc-support-for-tomcat | 1.0.8 | 提供对Tomcat的MVC支持
-noaoc-listener-for-nocat | 1.0.8 | Noaoc加载监听器
-nf | 1.0.8 | 提供其他模块的依赖
+noson | 1.1.3 | Json序列化&反序列化
+nocat | 1.1.3 | 基于Java的Web容器
+noaoc | 1.1.3 | IOC&AOP
+nomvc | 1.1.3 | MVC
+nolog | 1.1.3 | 日志及工具包
+seeker | 1.1.3 | Xml解析
+nodb | 1.1.3 | ORM
+noasm | 1.1.3 | ASM工具
+nomvc-support-for-nocat | 1.1.3 | 提供对Nocat的MVC支持
+nomvc-support-for-tomcat | 1.1.3 | 提供对Tomcat的MVC支持
+noaoc-listener-for-nocat | 1.1.3 | Noaoc加载监听器
+nf | 1.1.3 | 提供其他模块的依赖
 
 ### 2.3、NF模块详细介绍
 在学习使用之前，如果您有兴趣，可以先看看它们是具体作用~

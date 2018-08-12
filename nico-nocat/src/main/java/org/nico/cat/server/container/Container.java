@@ -2,6 +2,7 @@ package org.nico.cat.server.container;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +30,12 @@ public abstract class Container {
 	
 	private Container(){
 		welcomes = new ArrayList<String>();
-		parameters = new HashMap<String, String>();
+		parameters = new HashMap<String, Object>();
 		apis = new ArrayList<ApiModule>();
 		filters = new ArrayList<FilterModule>();
 		listeners = new ArrayList<ListenerModule>();
 		apiMap = new HashMap<String, Api>();
-		filterMap = new HashMap<String, Filter>();
+		filterMap = new LinkedHashMap<String, Filter>();
 		sessionMap = new HashMap<String, Session>();
 		requestContainer = new ThreadLocal<Request>();
 		responseContainer = new ThreadLocal<Response>();
@@ -59,7 +60,7 @@ public abstract class Container {
 	
 	protected List<String> welcomes;
 	
-	protected Map<String, String> parameters;
+	protected Map<String, Object> parameters;
 	
 	protected List<ApiModule> apis;
 	
@@ -81,7 +82,7 @@ public abstract class Container {
 		return welcomes;
 	}
 
-	public Map<String, String> getParameters() {
+	public Map<String, Object> getParameters() {
 		return parameters;
 	}
 
@@ -129,7 +130,7 @@ public abstract class Container {
 	
 	public abstract void appendListenerModule(ListenerModule listener);
 	
-	public abstract void putParameter(String key, String value);
+	public abstract void putParameter(String key, Object value);
 	
 	public abstract void putApi(String uri, Api api);
 	
@@ -205,9 +206,9 @@ public abstract class Container {
 		}
 		
 		@Override
-		public void putParameter(String key, String value) {
+		public void putParameter(String key, Object value) {
 			 synchronized (this) {
-				 if(parameters == null) parameters = new HashMap<String, String>();
+				 if(parameters == null) parameters = new HashMap<String, Object>();
 			 }
 			 parameters.put(key, value);
 		}

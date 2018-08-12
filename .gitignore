@@ -35,3 +35,10 @@ build
 bin
 out
 *.iml
+
+
+target
+.project
+.DS_Store
+.classpath
+.settings

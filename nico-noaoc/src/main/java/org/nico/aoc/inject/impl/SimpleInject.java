@@ -1,16 +1,19 @@
 package org.nico.aoc.inject.impl;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.nico.aoc.aspect.buddy.AspectBuddy;
 import org.nico.aoc.inject.BookInject;
@@ -20,7 +23,6 @@ import org.nico.aoc.util.reflect.FieldUtils;
 import org.nico.aoc.util.reflect.MethodUtils;
 import org.nico.asm.buddy.ASMClassBuddy;
 import org.nico.asm.contains.entity.ASMClassEntity;
-import org.nico.asm.contains.entity.ASMConstructionEntity;
 import org.nico.asm.contains.entity.ASMMethodEntity;
 import org.nico.asm.contains.entity.ASMParameterEntity;
 import org.nico.log.Logging;
@@ -88,24 +90,23 @@ public class SimpleInject implements BookInject{
 	public <T> T parameterConstructorInject(Class<T> clazz, Map<Object, Object> paramSource) throws IOException {
 		T target = null;
 		ASMClassEntity classEntity = ASMClassBuddy.getClassEntity(clazz);
-		List<ASMConstructionEntity> entities = classEntity.getConstructionMethods();
-		int parameterCount = parameterCount(paramSource);
-		ASMConstructionEntity hitEntity = getConstructorEntity(entities, paramSource, parameterCount);
+		List<ASMMethodEntity> entities = classEntity.getConstructionMethods();
+		int parameterCount = parameterCount(paramSource.keySet());
+		ASMMethodEntity hitEntity = getConstructorEntity(entities, paramSource, parameterCount);
 		if(hitEntity != null){
 			try {
-				
 				if(parameterCount != 0){
 					Object[] objects = transferParametersBuilder(
-							hitEntity.getNormalParameters(),
+							hitEntity.getParameters(),
 							paramSource,
-							hitEntity.getConstructor().getParameterTypes());
-					target = (T) hitEntity.getConstructor().newInstance(objects);
+							hitEntity.getMethod().getParameterTypes());
+					target = (T) ((Constructor<T>)hitEntity.getMethod()).newInstance(objects);
 				}else{
 					target = clazz.newInstance();
 				}
 				List<String> types = new ArrayList<String>();
-				if(hitEntity.getConstructor().getParameterCount() > 0){
-					for(Type type: hitEntity.getConstructor().getGenericParameterTypes()){
+				if(hitEntity.getMethod().getParameterCount() > 0){
+					for(Type type: hitEntity.getMethod().getGenericParameterTypes()){
 						types.add(type.getTypeName());
 					}
 				}
@@ -125,18 +126,18 @@ public class SimpleInject implements BookInject{
 	 * @param parameterCount params's count
 	 * @return ConstructorEntity hit Entity
 	 */
-	private ASMConstructionEntity getConstructorEntity(List<ASMConstructionEntity> entities, Map<Object, Object> parameters, int parameterCount){
-		ASMConstructionEntity hitEntity = null;
+	private ASMMethodEntity getConstructorEntity(List<ASMMethodEntity> entities, Map<Object, Object> parameters, int parameterCount){
+		ASMMethodEntity hitEntity = null;
 		if(CollectionUtils.isNotBlank(entities)){
-			for(ASMConstructionEntity entity: entities){
-				Map<String, ASMParameterEntity> entityParameterMap = new LinkedHashMap<String, ASMParameterEntity>();
-				List<ASMParameterEntity> asmParameters = entity.getNormalParameters();
-				if(asmParameters != null && asmParameters.size() > 0){
-					for(ASMParameterEntity asmParameter: asmParameters){
-						entityParameterMap.put(asmParameter.getName(), asmParameter);
+			for(ASMMethodEntity entity: entities){
+				Set<String> methodParams = new HashSet<String>();
+				String[] asmParameters = entity.getParameters();
+				if(asmParameters != null && asmParameters.length > 0){
+					for(String asmParameter: asmParameters){
+						methodParams.add(asmParameter);
 					}
 				}
-				int entityParameterCount = parameterCount(entityParameterMap);
+				int entityParameterCount = parameterCount(asmParameters);
 				if(parameterCount == 0){
 					if(parameterCount == entityParameterCount){
 						hitEntity = entity;
@@ -144,8 +145,8 @@ public class SimpleInject implements BookInject{
 					if(hitEntity != null) break;
 				}else{
 					if(parameterCount >= entityParameterCount){
-						if(parameters.keySet().containsAll(entityParameterMap.keySet())){
-							if(hitEntity != null && hitEntity.getNormalParameters().size() < entity.getNormalParameters().size()){
+						if(parameters.keySet().containsAll(methodParams)){
+							if(hitEntity != null && parameterCount(hitEntity.getParameters()) < parameterCount(entity.getParameters())){
 								hitEntity = entity;
 							}
 							if(hitEntity == null){
@@ -164,7 +165,12 @@ public class SimpleInject implements BookInject{
 	 * @param parameters map
 	 * @return count of the map
 	 */
-	private int parameterCount(Map<?, ?> parameters){
+	private int parameterCount(String[] parameters){
+		if(parameters == null || parameters.length == 0) return 0;
+		return parameters.length;
+	}
+	
+	private int parameterCount(Set<?> parameters){
 		if(parameters == null || parameters.size() == 0) return 0;
 		return parameters.size();
 	}
@@ -177,10 +183,10 @@ public class SimpleInject implements BookInject{
 	 * @param types method or constructor 's types
 	 * @return transfer parameters
 	 */
-	private Object[] transferParametersBuilder(List<ASMParameterEntity> parameters, Map<Object, Object> paramSource, Class<?>[] types){
+	private Object[] transferParametersBuilder(String[] parameters, Map<Object, Object> paramSource, Class<?>[] types){
 		Object[] objects = new Object[types.length];
 		for(int index = 0; index < objects.length; index ++){
-			Object pending =  paramSource.get(parameters.get(index).getName());
+			Object pending =  paramSource.get(parameters[index]);
 			if(pending != null) objects[index] = pending instanceof String ? typeConvert.convert(types[index], (String)pending) : pending;
 		}
 		return objects;

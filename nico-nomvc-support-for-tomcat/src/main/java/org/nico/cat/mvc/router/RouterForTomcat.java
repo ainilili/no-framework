@@ -62,7 +62,7 @@ public class RouterForTomcat extends HttpServlet {
 					Map<String, Object> pathValidMap = PathValidMatchUtils.parsePathValid(lobbyEntity.getLobby().mapping(), requestUri);
 					if(lobbyEntity.getMethod() != null){
 						Method method = lobbyEntity.getMethod();
-						List<ASMParameterEntity> sequenceParameters = AsmUtils.getMethodParameters(method);
+						String[] sequenceParameters = AsmUtils.getMethodParameters(method);
 						Parameter[] params = lobbyEntity.getMethod().getParameters();
 						Object[] arguments = new Object[params.length];
 						if(ArrayUtils.isNotBlank(params)){
@@ -75,9 +75,9 @@ public class RouterForTomcat extends HttpServlet {
 									}else if(ServletResponse.class.isAssignableFrom(param.getType())){
 										argument = response;
 									}else if(param.isAnnotationPresent(QueryParam.class)){
-										argument = TypeUtils.convert(param.getType(), request.getParameter(sequenceParameters.get(index).getName()));
+										argument = TypeUtils.convert(param.getType(), request.getParameter(sequenceParameters[index]));
 									}else if(param.isAnnotationPresent(PathParam.class)){
-										argument = TypeUtils.convert(param.getType(), pathValidMap.get(sequenceParameters.get(index).getName()));
+										argument = TypeUtils.convert(param.getType(), pathValidMap.get(sequenceParameters[index]));
 									}else if(param.isAnnotationPresent(Body.class)){
 										argument = InputStreamUtils.readStreamByLen(request.getInputStream(), request.getContentLength());
 									}else{

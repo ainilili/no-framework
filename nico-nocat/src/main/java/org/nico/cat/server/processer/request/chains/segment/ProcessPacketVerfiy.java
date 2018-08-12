@@ -1,13 +1,9 @@
 package org.nico.cat.server.processer.request.chains.segment;
 
-import java.util.Map;
-import java.util.Set;
 
-import javax.lang.model.element.TypeElement;
-
+import org.nico.cat.server.exception.error.PacketException;
 import org.nico.cat.server.processer.request.chains.AbstractRequestProcess;
 import org.nico.cat.server.request.Request;
-import org.nico.util.string.StringUtils;
 
 /** 
  * Verify packet before process
@@ -18,9 +14,9 @@ public class ProcessPacketVerfiy extends AbstractRequestProcess{
 
 	@Override
 	public Request process(String packet, Request request) throws Exception {
-		/** 如果请求信息为空 **/
-		if(StringUtils.isBlank(packet)){
-			throw new NullPointerException("Http header is null");
+
+		if(packet == null){
+			throw new PacketException("HTTP header is null");
 		}
 		return next(packet, request);
 	}

@@ -88,7 +88,7 @@ public class ResponseAssembly {
 		if(ResponseVerify.responseStream(content.getResponseBody())){
 			InputStream is = (InputStream)content.getResponseBody();
 			int length = 0;
-			byte[] bytes = new byte[1024];
+			byte[] bytes = new byte[10240];
 			while ((length = is.read(bytes)) != -1) {
 				content.getStream().write(bytes, 0, length);
 			}
@@ -97,7 +97,5 @@ public class ResponseAssembly {
 			String html = content.getResponseBody().toString();
 			content.getStream().println(html);
 		}
-//		logging.debug(content.getRequest().getUri() + " as " + content.getHeaders().getValue("Content-Type"));
 	}
-	
 }

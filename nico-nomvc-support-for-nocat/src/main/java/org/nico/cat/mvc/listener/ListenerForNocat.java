@@ -16,7 +16,7 @@ import org.nico.cat.server.container.moudle.realize.entry.Listener;
 public class ListenerForNocat extends SimpleListener implements Listener{
 
 	@Override
-	public void init(Map<String, String> properties, ListenerModule listenerModule) throws IOException, NomvcException {
+	public void init(Map<String, Object> properties, ListenerModule listenerModule) throws IOException, NomvcException {
 		/**
 		 * This is the art of my code, LILI i love you.
 		 */

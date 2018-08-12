@@ -18,7 +18,7 @@ public class ProcessSession extends AbstractResponseProcess{
 
 	@Override
 	public Response process(Request request, Response response) throws Exception {
-		Container container = Container.getInstance();
+		
 		if(container != null){
 			if(request.getSession() != null){
 				if(! request.getSession().isEmpty()){

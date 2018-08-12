@@ -1,5 +1,7 @@
 package org.nico.asm.contains.entity;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -11,50 +13,34 @@ import java.util.List;
 
 public class ASMMethodEntity {
 
-	protected String methodName;
+	protected String[] parameters;
 	
-	protected List<ASMParameterEntity> normalParameters;
+	protected Executable method;
 	
-	protected ASMParameterEntity returnParameter;
-	
-	protected Method method;
-	
-	public Method getMethod() {
-		return method;
+	public ASMMethodEntity() {
+		super();
 	}
 
-	public void setMethod(Method method) {
+	public ASMMethodEntity(String[] parameters, Executable method) {
+		super();
+		this.parameters = parameters;
 		this.method = method;
 	}
 
-	public String getMethodName() {
-		return methodName;
+	public String[] getParameters() {
+		return parameters;
 	}
 
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
+	public void setParameters(String[] parameters) {
+		this.parameters = parameters;
 	}
 
-	public List<ASMParameterEntity> getNormalParameters() {
-		return normalParameters;
+	public Executable getMethod() {
+		return method;
 	}
 
-	public void setNormalParameters(List<ASMParameterEntity> normalParameters) {
-		this.normalParameters = normalParameters;
-	}
-
-	public ASMParameterEntity getReturnParameter() {
-		return returnParameter;
-	}
-
-	public void setReturnParameter(ASMParameterEntity returnParameter) {
-		this.returnParameter = returnParameter;
-	}
-
-	@Override
-	public String toString() {
-		return "ASMMethodEntity [methodName=" + methodName + ", normalParameters=" + normalParameters
-				+ ", returnParameter=" + returnParameter + ", method=" + method + "]";
+	public void setMethod(Executable method) {
+		this.method = method;
 	}
 
 

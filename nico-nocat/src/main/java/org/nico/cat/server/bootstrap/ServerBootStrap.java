@@ -12,12 +12,13 @@ import org.nico.cat.server.bootstrap.loader.impl.LoaderListener;
 import org.nico.cat.server.bootstrap.loader.impl.LoaderParameter;
 import org.nico.cat.server.bootstrap.loader.impl.LoaderWelcome;
 import org.nico.cat.server.container.Container;
+import org.nico.fig.center.ConfigCenter;
+import org.nico.fig.loader.ConfigLoader;
 import org.nico.log.Logging;
 import org.nico.log.LoggingHelper;
-import org.nico.seeker.scan.impl.NicoScanner;
-import org.nico.seeker.searcher.impl.NicoSearcher;
 import org.nico.util.resource.ResourceUtils;
 import org.nico.util.stream.StreamUtils;
+import org.nico.util.string.StringUtils;
 
 /** 
  * The bootStrap of the server 
@@ -29,16 +30,26 @@ public class ServerBootStrap {
 	
 	private static Logging logging = LoggingHelper.getLogging(ServerBootStrap.class);
 	
+	private String env;
+	
+	public void start(String env){
+		start(-1, env);
+	}
+	
 	public void start(){
-		start(-1);
+		start(-1, null);
 	}
 	
 	public void start(int port){
+		start(port, null);
+	}
+	
+	public void start(int port, String env){
 		/**
 		 * Start Server with port
 		 */
 		long start = System.nanoTime();
-		init();
+		init(env);
 		logging.info("Starting the service takes " + (System.nanoTime() - start)/1000000 + " milliseconds");
 		if(port > 0) {
 			new Server(port).start();
@@ -47,18 +58,19 @@ public class ServerBootStrap {
 		}
 	}
 	
-	public void init() {
+	public void init(String env) {
 		try{
-			logging.info("123Server bootStrap be launch on localhost ");
+			logging.info("Server bootStrap be launch on localhost ");
 			/**
 			 * Reader configuration by SEEKER
 			 */
-			String dom = StreamUtils.readStream2Str(ResourceUtils.getClasspathResource(ConfigKey.CONFIGURATION));
+			ConfigLoader.loader(env);
+			
 			
 			/**
 			 * Loader XML configuration from the path defined
 			 */
-			ServerLoaderProcess processer = new ServerLoaderProcess(new NicoSearcher(new NicoScanner(dom)));
+			ServerLoaderProcess processer = new ServerLoaderProcess(ConfigCenter.getInstance().getNocat());
 			processer.processLoader(new LoaderConfig());
 			processer.processLoader(new LoaderWelcome());
 			processer.processLoader(new LoaderApi());

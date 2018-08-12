@@ -34,6 +34,7 @@ public class ProcessPacketCookie extends AbstractRequestProcess{
 				}
 			}
 		}
+		request.setSession(new Session());
 		request.setCookieMap(cookieMap);
 		String sessionId = null;
 		if(cookieMap.containsKey(ConfigKey.SESSIONID)){
@@ -41,6 +42,7 @@ public class ProcessPacketCookie extends AbstractRequestProcess{
 			if(Container.getInstance().containsSession(sessionId)){
 				request.setSession(Container.getInstance().getSession(sessionId));
 			}else{
+				
 				Container.getInstance().putSession(sessionId, request.getSession());
 			}
 		}

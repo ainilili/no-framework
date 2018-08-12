@@ -1,9 +1,7 @@
 package org.nico.cat.server.processer.request.chains;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 
-import org.nico.cat.server.exception.runtime.ProcessException;
 import org.nico.cat.server.processer.request.chains.segment.ProcessPacketBody;
 import org.nico.cat.server.processer.request.chains.segment.ProcessPacketCookie;
 import org.nico.cat.server.processer.request.chains.segment.ProcessPacketHeader;

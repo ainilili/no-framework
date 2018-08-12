@@ -16,5 +16,5 @@ public interface Listener {
 	 * @param properties The loading parameters
 	 * @param listenerModule Monitor module
 	 */
-	public void init(Map<String, String> properties, ListenerModule listenerModule) throws Exception;
+	public void init(Map<String, Object> properties, ListenerModule listenerModule) throws Exception;
 }

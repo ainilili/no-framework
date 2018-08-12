@@ -1,7 +1,6 @@
 package org.nico.cat.server.processer.response.chains.segment;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -12,12 +11,11 @@ import org.nico.cat.server.request.Request;
 import org.nico.cat.server.response.Response;
 import org.nico.cat.server.response.parameter.ContentType;
 import org.nico.cat.server.response.parameter.HttpCode;
+import org.nico.cat.server.util.ImageUtils;
 import org.nico.cat.server.util.UriUtils;
 import org.nico.cat.server.util.WrapperUtils;
 import org.nico.util.collection.CollectionUtils;
 import org.nico.util.resource.ResourceUtils;
-import org.nico.util.stream.FileUtils;
-import org.nico.util.stream.StreamUtils;
 
 public class ProcessUriResource extends AbstractResponseProcess{
 
@@ -47,16 +45,18 @@ public class ProcessUriResource extends AbstractResponseProcess{
 			
 			boolean alreadyRedirected = request.getUriRedirect() != null;
 			
-			String resourcePath = BASE_PATH + (alreadyRedirected ? request.getUriRedirect() : request.getUri());
+			String resourcePath = null;
 			
 			if(request.getUri().equals("/")) {
 				resourcePath = BASE_PATH + defaultIndex;
+			}else{
+				resourcePath = BASE_PATH + (alreadyRedirected ? request.getUriRedirect() : request.getUri());
 			}
+			
 			if(alreadyRedirected) {
 				response.setHttpcode(HttpCode.HS302);
 				response.getHeaders().putLast("Location", request.getUriRedirect());
 			}else {
-				InputStream inputStream = null;
 				InputStream backupsStream = null;
 				try {
 					/**
@@ -64,35 +64,29 @@ public class ProcessUriResource extends AbstractResponseProcess{
 					 * causing the response flow to be empty.
 					 */
 					if(ResourceUtils.RUNNING_IN_JAR) {
-						inputStream = ResourceUtils.getClasspathResource(resourcePath);
 						backupsStream = ResourceUtils.getClasspathResource(resourcePath);
 					}else {
-						inputStream = ResourceUtils.getResource(resourcePath);
 						backupsStream = ResourceUtils.getResource(resourcePath);
 					}
-					if(inputStream == null) {
+					if(backupsStream == null) {
 						throw new FileNotFoundException("Can not found resource: " + resourcePath);
 					}
+					String uriSuffix = UriUtils.getSuffix(request.getUri());
 					
-					if(FileUtils.isImage(inputStream)){
+					if(ImageUtils.isImage(uriSuffix)){
 						response.setContentType(ContentType.IMAGE);
 						response.write(backupsStream);
-					}else if(WrapperUtils.specialContentType.containsKey(UriUtils.getSuffix(request.getUri()))) {
+					}else if(WrapperUtils.specialContentType.containsKey(uriSuffix)) {
 						response.setContentType(ContentType.APPLICATION);
 						response.write(backupsStream);
 					}else{
 						response.setContentType(ContentType.TEXT);
-						String html = StreamUtils.readStream2Str(backupsStream);
-						response.print(html);
-						backupsStream.close();
+						response.write(backupsStream);
 					}
 					response.setHttpcode(HttpCode.HS200);
 				} catch (FileNotFoundException e) {
 					response.setHttpcode(HttpCode.HS404);
 				}finally{
-					if(inputStream != null){
-						inputStream.close();
-					}
 				}
 			}
 			

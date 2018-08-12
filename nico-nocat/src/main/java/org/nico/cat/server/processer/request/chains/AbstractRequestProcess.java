@@ -1,7 +1,5 @@
 package org.nico.cat.server.processer.request.chains;
 
-import java.util.Map;
-
 import org.nico.cat.server.request.Request;
 import org.nico.log.Logging;
 import org.nico.log.LoggingHelper;

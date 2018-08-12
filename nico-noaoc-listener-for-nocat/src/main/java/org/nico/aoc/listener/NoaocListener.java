@@ -17,7 +17,7 @@ import org.nico.noson.Noson;
 public class NoaocListener implements Listener{
 
 	@Override
-	public void init(Map<String, String> properties, ListenerModule listenerModule) throws Exception {
+	public void init(Map<String, Object> properties, ListenerModule listenerModule) throws Exception {
 		AocConfigBean config = Noson.convert(listenerModule.getPayload(), AocConfigBean.class);
 		try {
 			BookLoader.loaderCompent(config.getCompents());

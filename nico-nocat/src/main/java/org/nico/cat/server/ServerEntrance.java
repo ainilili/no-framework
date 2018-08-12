@@ -3,7 +3,6 @@ package org.nico.cat.server;
 import java.io.IOException;
 import java.net.Socket;
 
-import org.nico.cat.server.exception.runtime.ProcessException;
 import org.nico.cat.server.processer.ServerProcesser;
 import org.nico.cat.server.processer.entity.ProcessResult;
 import org.nico.cat.server.response.buddy.ResponseBuddy;

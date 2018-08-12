@@ -7,14 +7,10 @@ import org.nico.cat.server.container.moudle.realize.executor.ModuleExecutor;
 import org.nico.cat.server.exception.runtime.ExecuteMoudleException;
 import org.nico.cat.server.request.Request;
 import org.nico.cat.server.response.Response;
-import org.nico.log.Logging;
-import org.nico.log.LoggingHelper;
 import org.nico.util.matching.MatchingUtils;
 
 
 public class FilterExecutor implements ModuleExecutor<FilterModule>{
-
-	private Logging logging = LoggingHelper.getLogging(FilterExecutor.class);
 
 	private FilterExecutor(){}
 	

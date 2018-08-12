@@ -240,19 +240,16 @@ public class NicoScanner extends SeekerScanner{
 				if(cache.toString().equals("!--") || (isBlank(c) || c == '/' || c == '>') &&  searcher && !cache.toString().equals("")){
 					cache = RegexUtils.filterBlank(cache.toString());
 					cache = RegexUtils.filterAnnotation(cache.toString());
-					member = DomMember.MEMBERS_ALL_FILTER.contains(cache.toString());
 					member = true;
-					if(member){ 
-						if(c == '/' || c == '>'){
-							--index;
-						}
-						domProcesser.setPrefix(cache.toString());
-						if(DomMember.MEMBERS_ANNOTATION.containsKey(domProcesser.getPrefix())){
-							isAnnotation = true;
-							member = false;
-						}
-						isOther = DomMember.MEMBERS_OTHER_FILTER.contains(domProcesser.getPrefix());
+					if(c == '/' || c == '>'){
+						--index;
 					}
+					domProcesser.setPrefix(cache.toString());
+					if(DomMember.MEMBERS_ANNOTATION.containsKey(domProcesser.getPrefix())){
+						isAnnotation = true;
+						member = false;
+					}
+					isOther = DomMember.MEMBERS_OTHER_FILTER.contains(domProcesser.getPrefix());
 					cache.setLength(0);
 					searcher = false;
 				} 

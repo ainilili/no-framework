@@ -16,7 +16,7 @@ public class ServerConfig {
 	/**
 	 * Normal
 	 */
-	protected int coresizeNormal = 300;
+	protected int coresizeNormal = 100;
 	
 	/**
 	 * Max 
@@ -26,12 +26,12 @@ public class ServerConfig {
 	/**
 	 * Keep Alive(s)
 	 */
-	protected int keepaliveTime = 5;  
+	protected int keepaliveTime = 10;  
 	
 	/**
 	 * Thread pools
 	 */
-	protected ExecutorService  serverThreadPool =  new ThreadPoolExecutor(
+	protected ThreadPoolExecutor  serverThreadPool =  new ThreadPoolExecutor(
 			
 				coresizeNormal,
 				
@@ -42,5 +42,13 @@ public class ServerConfig {
 				TimeUnit.SECONDS,
 				
 				new LinkedBlockingQueue<Runnable>()
-	); 
+	){
+		{
+			allowCoreThreadTimeOut(false);
+		}
+	}; 
+	
+	public ThreadPoolExecutor getPools(){
+		return serverThreadPool;
+	}
 }

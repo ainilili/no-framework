@@ -6,7 +6,6 @@ import java.net.Socket;
 import org.nico.cat.config.ConfigKey;
 import org.nico.cat.server.request.Request;
 import org.nico.cat.server.response.Response;
-import org.nico.cat.server.response.parameter.ContentType;
 import org.nico.cat.server.response.parameter.HttpCode;
 
 /**

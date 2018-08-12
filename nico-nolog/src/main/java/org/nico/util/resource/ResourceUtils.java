@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.nico.util.collection.ArrayUtils;
+
 /** 
  * 
  * @author nico
@@ -18,6 +20,8 @@ public class ResourceUtils {
 	
 	public static final boolean RUNNING_IN_JAR;
 	
+	private static final String CLASS_SUFFIX = ".class";
+	
 	static{
 		CLASSPATH = Thread.class.getResource("/") != null 
 				? 
@@ -28,8 +32,25 @@ public class ResourceUtils {
 				Thread.currentThread().getContextClassLoader().getResource("/").getPath() 
 				: 
 				"";
-		URL resourcePath = ResourceUtils.class.getResource("ResourceUtils.class");
-		RUNNING_IN_JAR = resourcePath == null ? false : resourcePath.toString().startsWith("jar");
+		RUNNING_IN_JAR = isJarEnvironment();
+	}
+	
+	public static boolean isJarEnvironment() {
+		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+		if(ArrayUtils.isNotBlank(stackTraceElements)) {
+			StackTraceElement rootStack = stackTraceElements[stackTraceElements.length - 1];
+			try {
+				return isJarEnvironment(Class.forName(rootStack.getClassName()));
+			} catch (ClassNotFoundException e) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static boolean isJarEnvironment(Class<?> clazz) {
+		URL resourcePath = clazz.getResource(clazz.getSimpleName() + ".class");
+		return resourcePath == null ? false : resourcePath.toString().startsWith("jar");
 	}
 	
 	public static InputStream getClasspathResource(String name) throws FileNotFoundException{

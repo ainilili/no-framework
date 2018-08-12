@@ -10,7 +10,7 @@ public class ReversalMapHandler extends ReversalHandler{
 	@Override
 	public String handle(Object obj) {
 		if(obj instanceof Map){
-			return handleMap((Map<String, Object>)obj, new ReversalRecorder());
+			return handleMap((Map<Object, Object>)obj, new ReversalRecorder());
 		}
 		return nextHandler.handle(obj);
 	}

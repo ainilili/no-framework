@@ -20,13 +20,11 @@ public class ProcessUriApi extends AbstractResponseProcess{
 	@Override
 	public Response process(Request request, Response response) throws Exception {
 		if(! response.isPushed()){
-
-			Container container = Container.getInstance();
 			if(container.getApis() != null){
 				for(ApiModule module: container.getApis()){
-					if(ExecutorFactory.getExecutor(ApiModule.class).matching(request.getUri(), module)){
+					if(apiExcutor.matching(request.getUri(), module)){
 						try {
-							ExecutorFactory.getExecutor(ApiModule.class).execute(request, response, module);
+							apiExcutor.execute(request, response, module);
 							if(StringUtils.isNotBlank(request.getUriRedirect())){
 								request.setUriRedirect(request.getUriRedirect());
 								break;

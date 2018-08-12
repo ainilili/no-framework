@@ -69,7 +69,7 @@ public class Server extends ServerConfig{
 				/**
 				 * The problem of preventing the <strong>Provisional headers are shown</strong>.
 				 */
-				Thread.sleep(10);
+				//Thread.sleep(2);
 				
 				/**
 				 * Handle the client's entry.

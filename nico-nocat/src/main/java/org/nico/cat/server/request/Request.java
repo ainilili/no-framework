@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.nico.cat.server.request.buddy.RequestAssembler;
+import org.nico.cat.server.request.buddy.RequestContent;
 import org.nico.cat.server.request.extra.Cookie;
 import org.nico.cat.server.request.extra.Resource;
 import org.nico.cat.server.request.extra.Session;
@@ -17,7 +17,7 @@ import org.nico.cat.server.stream.ByteBuffer;
  * @author nico
  * @version createTime：2018年1月4日 下午10:20:16
  */
-public class Request extends RequestAssembler{
+public class Request extends RequestContent{
 	
 	private Socket client;
 	
@@ -28,10 +28,6 @@ public class Request extends RequestAssembler{
 	private Map<String, Cookie> cookieMap;
 	
 	private Map<String, Resource> resourceMap;
-	
-	{
-		session = new Session();
-	}
 	
 	public Request() {}
 

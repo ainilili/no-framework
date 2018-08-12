@@ -60,7 +60,7 @@ public class RouterForNocat extends Api {
 					Map<String, Object> pathValidMap = PathValidMatchUtils.parsePathValid(lobbyEntity.getUnbrokenMapping(), request.getUri());
 					if(lobbyEntity.getMethod() != null){
 						Method method = lobbyEntity.getMethod();
-						List<ASMParameterEntity> sequenceParameters = AsmUtils.getMethodParameters(method);
+						String[] sequenceParameters = AsmUtils.getMethodParameters(method);
 						Parameter[] params = lobbyEntity.getMethod().getParameters();
 						Object[] arguments = new Object[params.length];
 						if(ArrayUtils.isNotBlank(params)){
@@ -78,9 +78,9 @@ public class RouterForNocat extends Api {
 								}else if(Session.class.isAssignableFrom(param.getType())){
 									argument = request.getSession();
 								}else if(param.isAnnotationPresent(QueryParam.class)){
-									argument = TypeUtils.convert(param.getType(), request.getProperty(sequenceParameters.get(index).getName()));
+									argument = TypeUtils.convert(param.getType(), request.getProperty(sequenceParameters[index]));
 								}else if(param.isAnnotationPresent(PathParam.class)){
-									argument = TypeUtils.convert(param.getType(), pathValidMap.get(sequenceParameters.get(index).getName()));
+									argument = TypeUtils.convert(param.getType(), pathValidMap.get(sequenceParameters[index]));
 								}else if(param.isAnnotationPresent(Body.class)){
 									argument = Noson.convert(request.getBody(), param.getType());
 								}else{

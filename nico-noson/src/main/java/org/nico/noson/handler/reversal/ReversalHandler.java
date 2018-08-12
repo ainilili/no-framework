@@ -82,12 +82,12 @@ public abstract class ReversalHandler {
 		return builder.toString();
 	}
 
-	public String handleMap(Map<String, Object> map, ReversalRecorder recorder){
+	public String handleMap(Map<Object, Object> map, ReversalRecorder recorder){
 		recorder.add(map);
 		StringBuilder builder = new StringBuilder();
 		builder.append("{");
 		int index = 0;
-		for(Entry<String, Object> entry: map.entrySet()){
+		for(Entry<Object, Object> entry: map.entrySet()){
 			Object value = cycleCheck(recorder, entry.getValue());
 			if(value != null || NosonConfig.ALLOW_EMPTY){
 				if(index > 0){
@@ -164,7 +164,7 @@ public abstract class ReversalHandler {
 		}else if(Noson.class.isAssignableFrom(type)){
 			builder.append(handleNoson((Noson)currentObj, recorder));
 		}else if(Map.class.isAssignableFrom(type)){
-			builder.append(handleMap((Map<String, Object>)currentObj, recorder));
+			builder.append(handleMap((Map<Object, Object>)currentObj, recorder));
 		}else if(type.isArray()){
 			builder.append(handleArray(currentObj, recorder));
 		}else{

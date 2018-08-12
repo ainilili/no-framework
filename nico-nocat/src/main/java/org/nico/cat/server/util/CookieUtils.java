@@ -17,7 +17,7 @@ public class CookieUtils {
 	 * @return
 	 */
 	public static String assemblyCookie(Cookie cookie){
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		if(cookie != null){
 			if(StringUtils.isNotBlank(cookie.getName())){
 				buf.append(cookie.getName() + "=");

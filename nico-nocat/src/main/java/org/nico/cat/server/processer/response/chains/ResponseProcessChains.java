@@ -7,7 +7,6 @@ import org.nico.cat.server.processer.response.chains.segment.ProcessSession;
 import org.nico.cat.server.processer.response.chains.segment.ProcessUriApi;
 import org.nico.cat.server.processer.response.chains.segment.ProcessUriFilter;
 import org.nico.cat.server.processer.response.chains.segment.ProcessUriResource;
-import org.nico.cat.server.processer.response.chains.segment.ProcessUriVerify;
 import org.nico.cat.server.processer.response.chains.segment.ProcessVerify;
 import org.nico.cat.server.request.Request;
 import org.nico.cat.server.response.Response;
@@ -29,7 +28,6 @@ public class ResponseProcessChains{
 	static{
 		chains = new LinkedList<AbstractResponseProcess>();
 		ResponseProcessChains.append(new ProcessVerify());
-		ResponseProcessChains.append(new ProcessUriVerify());
 		ResponseProcessChains.append(new ProcessUriFilter());
 		ResponseProcessChains.append(new ProcessUriApi());
 		ResponseProcessChains.append(new ProcessUriResource());

@@ -1,11 +1,11 @@
 package org.nico.cat.server.processer.response.chains;
 
 
+import org.nico.cat.server.container.Container;
 import org.nico.cat.server.container.module.ApiModule;
 import org.nico.cat.server.container.module.FilterModule;
+import org.nico.cat.server.container.moudle.realize.executor.ExecutorFactory;
 import org.nico.cat.server.container.moudle.realize.executor.ModuleExecutor;
-import org.nico.cat.server.container.moudle.realize.executor.impl.ApiExecutor;
-import org.nico.cat.server.container.moudle.realize.executor.impl.FilterExecutor;
 import org.nico.cat.server.request.Request;
 import org.nico.cat.server.response.Response;
 import org.nico.log.Logging;
@@ -19,6 +19,12 @@ import org.nico.log.LoggingHelper;
 public abstract class AbstractResponseProcess {
 
 	private AbstractResponseProcess next;
+	
+	protected Container container = Container.getInstance();
+	
+	protected ModuleExecutor<FilterModule> filterExcutor = ExecutorFactory.getExecutor(FilterModule.class);
+	
+	protected ModuleExecutor<ApiModule> apiExcutor = ExecutorFactory.getExecutor(ApiModule.class);
 	
 	protected Logging logging = LoggingHelper.getLogging(AbstractResponseProcess.class);
 	

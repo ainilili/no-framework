@@ -10,8 +10,8 @@ import org.nico.cat.server.container.moudle.realize.entry.Filter;
 import org.nico.cat.server.exception.runtime.LoaderMoudleException;
 import org.nico.cat.server.util.TypeUtils;
 import org.nico.cat.server.util.UriUtils;
-import org.nico.seeker.dom.DomBean;
-import org.nico.seeker.searcher.SeekerSearcher;
+import org.nico.fig.center.bean.NocatBean;
+import org.nico.fig.center.bean.NocatBean.FilterBean;
 import org.nico.util.collection.CollectionUtils;
 import org.nico.util.reflect.ClassUtils;
 
@@ -23,16 +23,13 @@ import org.nico.util.reflect.ClassUtils;
 public class LoaderFilter extends ServerLoaderConfig implements ServerLoader{
 
 	@Override
-	public void loader(SeekerSearcher searcher) {
-		List<DomBean> results = searcher.searching(CAT_FILTERS).searching(CAT_FILTERS_FILTER).getResults();
-		DomBean[] tmpDomBeans = null;
-		if(CollectionUtils.isNotBlank(results)){
-			for(DomBean result: results){
-				tmpDomBeans = new DomBean[]{result};
-				boolean singleton = TypeUtils.getBoolean(result.get(CAT_FILTERS_FILTER_SINGLETON));
-				DomBean uri = searcher.searching(CAT_FILTERS_FILTER_URI, tmpDomBeans).getSingleResult();
-				DomBean cls = searcher.searching(CAT_FILTERS_FILTER_HANDLER, tmpDomBeans).getSingleResult();
-				DomBean custom = searcher.searching(CAT_FILTERS_FILTER_PAYLOAD, tmpDomBeans).getSingleResult();
+	public void loader(NocatBean nocatCenter) {
+		if(CollectionUtils.isNotBlank(nocatCenter.getFilters())){
+			for(FilterBean filterBean: nocatCenter.getFilters()){
+				boolean singleton = filterBean.isSingle();
+				String uri = filterBean.getUri();
+				String cls = filterBean.getHandler();
+				String payload = filterBean.getPayload();
 				if(uri == null || cls == null){
 					if(cls == null)
 						logging.warning("Found a filter config's handler is null, will skip loader this config.");
@@ -40,11 +37,11 @@ public class LoaderFilter extends ServerLoaderConfig implements ServerLoader{
 						logging.warning("Found a filter api config's uri is null, will skip loader this config.");
 				}else{
 					Class<?> handler = null;
-					if((handler = ClassUtils.forName(cls.getBody())) == null){
-						throw new LoaderMoudleException("Class " + cls.getBody() + " can not found in the memory ");
+					if((handler = ClassUtils.forName(cls)) == null){
+						throw new LoaderMoudleException("Class " + cls + " can not found in the memory ");
 					}else{
 						if(Filter.class.isAssignableFrom(handler)){
-							FilterModule filter = new FilterModule(UriUtils.tidyUri(uri.getBody()), (Class<Filter>)handler, null == custom ? null : custom.getBody(), singleton);
+							FilterModule filter = new FilterModule(UriUtils.tidyUri(uri), (Class<Filter>)handler, payload, singleton);
 							Container.getInstance().appendFilterModule(filter);	
 						}else{
 							throw new LoaderMoudleException("Class " + handler.getName() + " do not implements the {@link Filter}");

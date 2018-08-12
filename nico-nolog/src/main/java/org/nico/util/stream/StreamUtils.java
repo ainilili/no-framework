@@ -24,7 +24,7 @@ public class StreamUtils {
 	public static byte[] readStream(InputStream inStream) throws IOException  { 
 		BufferedReader br = new BufferedReader(new InputStreamReader(inStream));  
 		StringBuilder reqStr = new StringBuilder();  
-		char[] buf = new char[1024];  
+		char[] buf = new char[2048];  
 		int len = -1;
 		while ((len = br.read(buf)) != -1) {  
 			reqStr.append(new String(buf, 0, len));  
